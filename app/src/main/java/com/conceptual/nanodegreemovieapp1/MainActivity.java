@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,13 +49,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtTryAgain;
     private Button btnTryAgain;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.movie_grid_view);
         mProgressBar = findViewById(R.id.progressBar);
         txtTryAgain = findViewById(R.id.text_tryAgain);
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2, LinearLayoutManager.VERTICAL
                 , false);
         recyclerView.setLayoutManager(gridLayoutManager);
+       setSupportActionBar(toolbar);
 
 
     }
