@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,31 +13,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.conceptual.nanodegreemovieapp1.models.MovieData;
 import com.conceptual.nanodegreemovieapp1.models.Result;
-import com.conceptual.nanodegreemovieapp1.service.MovieApiService;
-import com.conceptual.nanodegreemovieapp1.utils.MovieAPI;
+import com.conceptual.nanodegreemovieapp1.viewModel.MainActivityViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.conceptual.nanodegreemovieapp1.ApiKey.YOUR_API_KEY;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -48,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Result> mTopRated;
     private TextView txtTryAgain;
     private Button btnTryAgain;
+    private MainActivityViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         txtTryAgain = findViewById(R.id.text_tryAgain);
         btnTryAgain = findViewById(R.id.button_tryAgain);
         btnTryAgain.setOnClickListener(view -> getPopular());
+        mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
 
         getPopular();
 
@@ -68,6 +61,15 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(gridLayoutManager);
        setSupportActionBar(toolbar);
 
+
+    }
+
+    private void getPopular() {
+
+    mViewModel.getPopular().observe(this, popularMoviesList->{
+        hideProgressBar();
+        recyclerView.setAdapter(new MovieAdapter(MainActivity.this, popularMoviesList));
+    });
 
     }
 
@@ -94,10 +96,15 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.menu_popular:
+                showProgressBar();
                 getPopular();
                 return true;
             case R.id.menu_top_rated:
+                showProgressBar();
                 getTopRated();
+                return true;
+            case R.id.menu_favourite:
+                getFavourite();
                 return true;
 
             default:
@@ -107,84 +114,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void getFavourite() {
+        mViewModel.favouriteVideos.observe(this, favouriteList ->{
+            recyclerView.setAdapter(new MovieAdapter(MainActivity.this, favouriteList));
+        });
+    }
+
     private void getTopRated() {
 
-        if(isOnline()){
-        //showProgressBar
-        showProgressBar();
-        hideTryAgain();
-        Call<MovieData> call = MovieAPI.getInstance().create(MovieApiService.class)
-                .getTopRatedMovies(YOUR_API_KEY);
-        call.enqueue(new Callback<MovieData>() {
-            @Override
-            public void onResponse(@NonNull Call<MovieData> call, @Nullable Response<MovieData> response) {
-                mTopRated = new ArrayList<>();
-                assert response != null;
-                if (response.isSuccessful()) {
-                    MovieData movieData = response.body();
-                    assert movieData != null;
-                    mTopRated = movieData.getResults();
-
-
-                    mMovieAdapter = new MovieAdapter(MainActivity.this, mTopRated);
-                    //hideProgressBar
-                    hideProgressBar();
-                    recyclerView.setAdapter(mMovieAdapter);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<MovieData> call, @NonNull Throwable t) {
-                showTryAgain();
-                hideProgressBar();
-                Log.d("MainActivity", " failure " + t.getMessage());
-                Toast.makeText(MainActivity.this, "No items gotten ", Toast.LENGTH_SHORT).show();
-            }
-        });}
-        else{
-           showSnackBar();
-        }
-
+        mViewModel.getTopRated().observe(this, popularMoviesList->{
+            hideProgressBar();
+            recyclerView.setAdapter(new MovieAdapter(MainActivity.this, popularMoviesList));
+        });
     }
 
-    private void getPopular() {
-        if (isOnline()){
-        showProgressBar();
-        hideTryAgain();
-        Call<MovieData> call = MovieAPI.getInstance().create(MovieApiService.class).
-                getPopularMovies("popularity.desc", YOUR_API_KEY);
-        call.enqueue(new Callback<MovieData>() {
-            @Override
-            public void onResponse(@NonNull Call<MovieData> call, @NonNull Response<MovieData> response) {
-                if (response.isSuccessful()) {
-                    MovieData movieDataMovies = response.body();
-                    assert movieDataMovies != null;
-                    mPopularList = movieDataMovies.getResults();
-                    Log.d("MainActivity", " Results " + movieDataMovies.getResults().toString());
 
-                    mMovieAdapter = new MovieAdapter(MainActivity.this, mPopularList);
-                    hideProgressBar();
-                    recyclerView.setAdapter(mMovieAdapter);
-                } else {
-                    Log.d("MainActivity", " failure " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<MovieData> call, @Nullable Throwable t) {
-                hideProgressBar();
-                showTryAgain();
-                assert t != null;
-                Log.d("MainActivity", " failure " + t.getMessage());
-                Toast.makeText(MainActivity.this, "No items gotten ", Toast.LENGTH_SHORT).show();
-            }
-        });}
-        else {
-            showSnackBar();
-        }
-
-
-    }
 
     private void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);

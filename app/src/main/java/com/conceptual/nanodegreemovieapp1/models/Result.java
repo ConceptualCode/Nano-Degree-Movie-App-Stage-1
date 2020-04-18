@@ -1,12 +1,66 @@
 package com.conceptual.nanodegreemovieapp1.models;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.List;
 
+@Entity(tableName = "videos")
 public class Result implements Serializable {
+
+    @PrimaryKey
+    private Integer id;
+
+    public void setPopularity(Float popularity) {
+        this.popularity = popularity;
+    }
+
+    public void setVoteCount(Integer voteCount) {
+        this.voteCount = voteCount;
+    }
+
+    public void setVideo(Boolean video) {
+        this.video = video;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setAdult(Boolean adult) {
+        this.adult = adult;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
+    }
+
+    public void setOriginalLanguage(String originalLanguage) {
+        this.originalLanguage = originalLanguage;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setVoteAverage(double voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
 
     @SerializedName("popularity")
     @Expose
@@ -20,9 +74,10 @@ public class Result implements Serializable {
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
-    @SerializedName("id")
-    @Expose
-    private Integer id;
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
     @SerializedName("adult")
     @Expose
     private Boolean adult;
@@ -35,9 +90,6 @@ public class Result implements Serializable {
     @SerializedName("original_title")
     @Expose
     private String originalTitle;
-    @SerializedName("genre_ids")
-    @Expose
-    private List<Integer> genreIds = null;
     @SerializedName("title")
     @Expose
     private String title;
@@ -98,11 +150,6 @@ public class Result implements Serializable {
 
     public String getOriginalTitle() {
         return originalTitle;
-    }
-
-
-    public List<Integer> getGenreIds() {
-        return genreIds;
     }
 
 

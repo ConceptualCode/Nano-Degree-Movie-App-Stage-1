@@ -1,5 +1,7 @@
 package com.conceptual.nanodegreemovieapp1.utils;
 
+import com.conceptual.nanodegreemovieapp1.service.MovieApiService;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -17,6 +19,9 @@ public  class MovieAPI {
         }
         return mRetrofit;
     }
+
+
+    public static MovieApiService movieAPI = getInstance().create(MovieApiService.class);
 
 
 }
