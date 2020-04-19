@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         btnTryAgain = findViewById(R.id.button_tryAgain);
         btnTryAgain.setOnClickListener(view -> getPopular());
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-
+        showProgressBar();
 
         getPopular();
 
@@ -65,11 +65,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPopular() {
+    if (isOnline()){
+        mViewModel.getPopular().observe(this, popularMoviesList->{
+            hideProgressBar();
+            recyclerView.setAdapter(new MovieAdapter(MainActivity.this, popularMoviesList));
+        });
+    }else
+        showSnackBar();
 
-    mViewModel.getPopular().observe(this, popularMoviesList->{
-        hideProgressBar();
-        recyclerView.setAdapter(new MovieAdapter(MainActivity.this, popularMoviesList));
-    });
 
     }
 
@@ -121,11 +124,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getTopRated() {
+        if (isOnline()){
+            mViewModel.getTopRated().observe(this, popularMoviesList->{
+                hideProgressBar();
+                recyclerView.setAdapter(new MovieAdapter(MainActivity.this, popularMoviesList));
+            });
+        }
+        else
+            showSnackBar();
 
-        mViewModel.getTopRated().observe(this, popularMoviesList->{
-            hideProgressBar();
-            recyclerView.setAdapter(new MovieAdapter(MainActivity.this, popularMoviesList));
-        });
     }
 
 
@@ -138,17 +145,6 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar.setVisibility(View.GONE);
     }
 
-    private void showTryAgain() {
-        txtTryAgain.setVisibility(View.VISIBLE);
-        btnTryAgain.setVisibility(View.VISIBLE);
-
-    }
-
-    private void hideTryAgain() {
-        txtTryAgain.setVisibility(View.GONE);
-        btnTryAgain.setVisibility(View.GONE);
-
-    }
     private void showSnackBar(){
         Snackbar snackbar = Snackbar
                 .make(mProgressBar, "No internet Connection! ", Snackbar.LENGTH_LONG)

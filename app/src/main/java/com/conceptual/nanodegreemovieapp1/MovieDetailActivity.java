@@ -47,11 +47,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         mReviewRecyclerView = findViewById(R.id.reviewRecyclerView);
         mbtnAddToFavourite = findViewById(R.id.favoriteButton);
         mBtnRemoveFromFavorite = findViewById(R.id.removeButton);
+
         mViewModel = ViewModelProviders.of(this).get(MoviedetailsActivityViewModel.class);
+
+
         if (!readButtonState("favourite")){
             mbtnAddToFavourite.setVisibility(View.VISIBLE);
             mBtnRemoveFromFavorite.setVisibility(View.GONE);
-
         }else
         {
             mbtnAddToFavourite.setVisibility(View.GONE);
